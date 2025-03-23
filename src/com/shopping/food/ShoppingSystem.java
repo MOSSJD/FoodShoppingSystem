@@ -12,7 +12,7 @@ public class ShoppingSystem {
         currentCart = null;
     }
     class ShoppingCart {
-        private final Map<String, Integer> cart;
+        private final Map<String, Double> cart;
         ShoppingCart() {
             cart = new HashMap<>();
         }
@@ -21,17 +21,29 @@ public class ShoppingSystem {
                     .mapToDouble(e -> itemList.getItem(e.getKey()).getPrice() * e.getValue())
                     .sum();
         }
-        public void addToCart(String foodName, int quantity) {
+        public void addToCart(String foodName, double quantity) {
+            if (cart.containsKey(foodName)) {
+                cart.put(foodName, quantity + cart.get(foodName));
+            }
             cart.put(foodName, quantity);
         }
+        public boolean isEmpty() {
+            return cart.isEmpty();
+        }
+        public int size() {
+            return cart.size();
+        }
         public String toString() {
+            if (isEmpty()) {
+                return "当前购物车为空。";
+            }
             StringBuilder builder = new StringBuilder();
             int index = 1;
             builder.append("您购买了");
             builder.append(cart.size());
             builder.append("件物品：\n");
             boolean first = true;
-            for (Map.Entry<String, Integer> entry : cart.entrySet()) {
+            for (Map.Entry<String, Double> entry : cart.entrySet()) {
                 var foodName = entry.getKey();
                 var quantity = entry.getValue();
                 if (!first)
@@ -48,6 +60,12 @@ public class ShoppingSystem {
             }
             return builder.toString();
         }
+        public void removeFromItemName(String itemName) {
+            if (!cart.containsKey(itemName)) {
+                throw new NoSuchItemException("购物车内没有该商品。请检查输入的商品名是否正确。");
+            }
+            cart.remove(itemName);
+        }
     }
     public void addACart(String customerName) {
         carts.put(customerName, new ShoppingCart());
@@ -58,7 +76,7 @@ public class ShoppingSystem {
         else
             throw new NoSuchElementException();
     }
-    public void addToCart(String item, int quantity) {
+    public void addToCart(String item, double quantity) {
         currentCart.addToCart(item, quantity);
     }
     public boolean hasItem(String itemName) {
@@ -74,7 +92,7 @@ public class ShoppingSystem {
             throw new NoSuchItemException();
     }
     public boolean validItemName(String name) {
-        return (name != null) && (name.length() > 1) && (name.charAt(0) >= 'a' && name.charAt(0) <= 'z');
+        return (name != null) && (name.length() > 1);
     }
     public double countPrice() {
         return currentCart.countTotalPrice();
@@ -84,5 +102,11 @@ public class ShoppingSystem {
     }
     public String getCartDescription() {
         return currentCart.toString();
+    }
+    public int getCartSize() {
+        return currentCart.size();
+    }
+    public void removeFromCart(String itemName) {
+        currentCart.removeFromItemName(itemName);
     }
 }

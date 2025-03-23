@@ -12,7 +12,8 @@ public class Main {
         boolean endLoop = false;
         do {
             try {
-                System.out.println("请输入所需购买的商品（输入“list”获取商品列表，输入“add”新增商品，输入“end”结束）：");
+                System.out.println(shoppingSystem.getCartDescription());
+                System.out.println("请输入所需购买的商品（输入“list”获取商品列表，输入“add”新增商品，输入“rem“将商品移出购物车，输入“end”结束）：");
                 String input = scanner.next();
                 if (input.equals("list")) {
                     System.out.println(shoppingSystem.getItemListDescription());
@@ -20,23 +21,40 @@ public class Main {
                 else if (input.equals("add")) {
                     System.out.println("请输入商品名：");
                     String name = scanner.next();
-                    System.out.println("请输入商品价格：");
-                    double price = scanner.nextDouble();
+                    System.out.println("请输入商品单价：");
+                    double price = .0;
+                    if (scanner.hasNextInt())
+                        price = scanner.nextInt();
+                    else if (scanner.hasNextDouble())
+                        price = scanner.nextDouble();
+                    else
+                        throw new PromptException("请输入一个数字！");
                     shoppingSystem.addItem(name, price);
+                }
+                else if (input.equals("rem")) {
+                    System.out.println("请输入所需移除的商品名：");
+                    String itemName = scanner.next();
+                    shoppingSystem.removeFromCart(itemName);
                 }
                 else if (input.equals("end")) {
                     endLoop = true;
                 }
                 else if (shoppingSystem.hasItem(input)) {
                     System.out.println("请输入需要购买的数量：");
-                    int quantity = scanner.nextInt();
+                    double quantity = .0;
+                    if (scanner.hasNextInt())
+                        quantity = scanner.nextInt();
+                    else if (scanner.hasNextDouble())
+                        quantity = scanner.nextDouble();
+                    else
+                        throw new PromptException("请输入一个数字！");
                     shoppingSystem.addToCart(input, quantity);
                 }
                 else {
                     throw new PromptException();
                 }
             } catch (NoSuchItemException e) {
-                System.out.println("请输入正确的商品名" + e.getMessage());
+                System.out.println("请输入正确的商品名。" + e.getMessage());
             }
             catch (PromptException
                    | NoSuchElementException

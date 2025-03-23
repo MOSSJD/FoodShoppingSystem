@@ -18,6 +18,9 @@ class ItemList {
         return list.get(name);
     }
     public String toString() {
+        if (list.isEmpty()) {
+            return "当前商品列表无商品。";
+        }
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (var item : list.values()) {
